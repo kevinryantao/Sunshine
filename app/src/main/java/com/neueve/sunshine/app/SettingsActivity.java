@@ -1,12 +1,10 @@
 package com.neueve.sunshine.app;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.view.KeyEvent;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -32,6 +30,7 @@ public class SettingsActivity extends PreferenceActivity
         // TODO: Add preferences
 
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
     }
 
     /**

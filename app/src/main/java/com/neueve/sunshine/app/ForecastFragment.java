@@ -307,6 +307,13 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String units = preferences.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_default));
+                if(units.equals(getString(R.string.pref_units_imperial))){
+                    high = convertToFahrenheit(high);
+                    low = convertToFahrenheit(low);
+                }
+
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
@@ -314,5 +321,9 @@ public class ForecastFragment extends Fragment {
             return resultStrs;
 
         }
+    }
+
+    private static double convertToFahrenheit(double temperatureInCelsius){
+        return 1.8 * temperatureInCelsius + 32;
     }
 }
