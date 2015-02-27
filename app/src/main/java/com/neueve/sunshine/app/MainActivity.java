@@ -1,6 +1,9 @@
 package com.neueve.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +11,9 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    public static final String GEO_BASE_URL = "geo:0,0";
+    public static final String QUERY_PARAM = "q";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,21 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingsIntent);
+            return true;
+        }
+
+        if (id == R.id.action_map) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String location = preferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+            Uri mapUri = Uri.parse(GEO_BASE_URL).buildUpon()
+                    .appendQueryParameter(QUERY_PARAM, location)
+                    .build();
+            mapIntent.setData(mapUri);
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
             return true;
         }
 
