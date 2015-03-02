@@ -1,11 +1,16 @@
 package com.neueve.sunshine.app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +25,7 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
     }
@@ -29,9 +34,7 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
-
-
+        getMenuInflater().inflate(R.menu.detail, menu);
 
         return true;
     }
@@ -56,9 +59,28 @@ public class DetailActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class DetailFragment extends Fragment {
 
-        public PlaceholderFragment() {
+        private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+        private String forecast;
+
+        public DetailFragment() {
+            setHasOptionsMenu(true);
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.detailfragment, menu);
+
+            MenuItem item = menu.findItem(R.id.action_share);
+
+            ShareActionProvider actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+            if(actionProvider != null){
+                actionProvider.setShareIntent(getDefaultIntent());
+            } else {
+                Log.d(LOG_TAG, "Share Action Provider is null");
+            }
         }
 
         @Override
@@ -70,7 +92,7 @@ public class DetailActivity extends ActionBarActivity {
             Intent incomingIntent = getActivity().getIntent();
             if(incomingIntent != null && incomingIntent.hasExtra(Intent.EXTRA_TEXT)) {
 
-                String forecast = incomingIntent.getStringExtra(Intent.EXTRA_TEXT);
+                forecast = incomingIntent.getStringExtra(Intent.EXTRA_TEXT);
                 TextView textView = (TextView) rootView.findViewById(R.id.textview_forecast);
                 textView.setTextSize(30);
                 textView.setText(forecast);
@@ -80,5 +102,22 @@ public class DetailActivity extends ActionBarActivity {
 
             return rootView;
         }
+
+        /** Defines a default (dummy) share intent to initialize the action provider.
+         * However, as soon as the actual content to be used in the intent
+         * is known or changes, you must update the share intent by again calling
+         * mShareActionProvider.setShareIntent()
+         */
+        private Intent getDefaultIntent() {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            intent.setType("text/plain");
+
+            intent.putExtra(Intent.EXTRA_TEXT, forecast + " #SunshineApp");
+
+            return intent;
+        }
+
     }
 }
