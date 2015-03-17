@@ -96,7 +96,30 @@ public class TestProvider extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deleteAllRecords();
+        //deleteAllRecords();
+    }
+
+    public void testAddLocation() {
+        SQLiteDatabase db = new WeatherDbHelper(this.mContext).getWritableDatabase();
+
+        ContentValues contentValues = TestUtilities.createNorthPoleLocationValues();
+
+        long id = db.insert(LocationEntry.TABLE_NAME, null, contentValues);
+
+        assertTrue(id != -1);
+
+        Cursor cursor = db.query(LocationEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        assertTrue("Error : no records returned from location query", cursor.moveToFirst());
+
+        TestUtilities.validateCurrentRecord("Error : Location query validation failed ", cursor, contentValues);
+
+        assertFalse("Error : more than one record returned", cursor.moveToNext());
+
+        cursor.close();
+
+        db.close();
+
     }
 
     /*
